@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#140c0c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Evolução</title>
+<style>
+:root {
+  color-scheme: dark;
+  --fundo: #140c0c;
+  --cartao: #221516;
+  --cartao-2: #2b1b1c;
+  --borda: rgba(255, 255, 255, .07);
+  --bordo: #8a2a2c;
+  --bordo-claro: #c9605a;
+  --texto: #f4eae7;
+  --fraco: #b59e99;
+  --sombra: 0 12px 28px rgba(0, 0, 0, .5), 0 2px 6px rgba(0, 0, 0, .35);
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  margin: 0;
+  background: radial-gradient(120% 60% at 50% 0%, #2a1415 0%, var(--fundo) 60%) fixed;
+  color: var(--texto);
+  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  padding: calc(14px + env(safe-area-inset-top)) 14px calc(96px + env(safe-area-inset-bottom));
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+main { max-width: 640px; margin: 0 auto; }
+[hidden] { display: none !important; }
+
+.destaque {
+  background: linear-gradient(140deg, #9a3033 0%, #6a1e22 55%, #47141a 100%);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 18px 36px rgba(90, 20, 24, .45), inset 0 1px 0 rgba(255, 255, 255, .14);
+  margin-bottom: 18px;
+}
+.destaque small { text-transform: uppercase; letter-spacing: .12em; font-size: 12px; opacity: .8; font-weight: 600; }
+.destaque h1 { margin: 6px 0 4px; font-size: 28px; line-height: 1.15; letter-spacing: -.02em; }
+.destaque p { margin: 0; opacity: .85; }
+
+.card {
+  background: linear-gradient(180deg, var(--cartao-2), var(--cartao));
+  border: 1px solid var(--borda);
+  border-radius: 20px;
+  box-shadow: var(--sombra);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.card.hoje { border-color: rgba(201, 96, 90, .55); }
+summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+}
+summary::-webkit-details-marker { display: none; }
+summary::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+  margin-left: auto;
+  border-right: 2px solid var(--fraco);
+  border-bottom: 2px solid var(--fraco);
+  transform: rotate(45deg);
+  transition: transform .2s;
+  flex: none;
+}
+details[open] > summary::after { transform: rotate(-135deg); }
+.titulo { display: flex; flex-direction: column; min-width: 0; }
+.titulo b { font-size: 17px; }
+.titulo span { color: var(--fraco); font-size: 14px; }
+.selo {
+  background: var(--bordo);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 3px 9px;
+  flex: none;
+}
+.corpo { padding: 0 18px 16px; }
+.corpo h4 {
+  margin: 16px 0 8px;
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--bordo-claro);
+}
+.corpo h4:first-child { margin-top: 2px; }
+.ex {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--borda);
+}
+.ex:first-child { border-top: 0; }
+.ex div { flex: 1; min-width: 0; }
+.ex small { display: block; color: var(--fraco); font-size: 13px; margin-top: 2px; }
+.reps {
+  background: rgba(138, 42, 44, .35);
+  border: 1px solid rgba(201, 96, 90, .35);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  flex: none;
+  max-width: 45%;
+}
+ul { margin: 0; padding: 0; list-style: none; }
+li { position: relative; padding: 6px 0 6px 18px; }
+li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 15px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bordo-claro);
+}
+.vazio { color: var(--fraco); margin: 0; }
+
+.resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+.resumo div { background: rgba(0, 0, 0, .22); border-radius: 14px; padding: 10px; }
+.resumo span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; opacity: .75; }
+.resumo b { font-size: 17px; font-variant-numeric: tabular-nums; }
+.principal {
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+  padding: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(180deg, #a03639, #7c2528);
+  box-shadow: 0 10px 22px rgba(124, 37, 40, .45), inset 0 1px 0 rgba(255, 255, 255, .18);
+  margin-bottom: 16px;
+}
+#grafico { padding: 14px; }
+#grafico svg { display: block; width: 100%; height: auto; }
+.grade { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.registro { margin: 0; padding: 0; text-align: left; color: inherit; }
+.registro .foto {
+  aspect-ratio: 3 / 4;
+  width: 100%;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
+  background: #1a1011;
+  color: var(--fraco);
+  font-size: 13px;
+}
+.registro .info { padding: 10px 12px 12px; }
+.registro .info span { display: block; color: var(--fraco); font-size: 13px; }
+.registro .info b { font-size: 18px; font-variant-numeric: tabular-nums; }
+.registro .info em { font-style: normal; font-size: 13px; font-weight: 600; margin-left: 6px; }
+.desceu { color: #8fc98a; }
+.subiu { color: #e08b7f; }
+
+nav {
+  position: fixed;
+  left: 14px;
+  right: 14px;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  max-width: 612px;
+  margin: 0 auto;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  background: rgba(34, 21, 22, .92);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--borda);
+  border-radius: 22px;
+  box-shadow: var(--sombra);
+}
+nav button {
+  flex: 1;
+  border: 0;
+  background: none;
+  border-radius: 16px;
+  padding: 9px 0 8px;
+  color: var(--fraco);
+  font-size: 12px;
+  font-weight: 600;
+}
+nav svg { display: block; width: 22px; height: 22px; margin: 0 auto 3px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+nav button.ativo { background: var(--bordo); color: #fff; box-shadow: 0 6px 14px rgba(138, 42, 44, .5); }
+
+dialog {
+  width: min(520px, 94vw);
+  max-height: 92vh;
+  border: 1px solid var(--borda);
+  border-radius: 24px;
+  background: var(--cartao);
+  color: var(--texto);
+  padding: 20px;
+  box-shadow: var(--sombra);
+}
+dialog::backdrop { background: rgba(0, 0, 0, .7); backdrop-filter: blur(3px); }
+dialog h3 { margin: 0 0 6px; font-size: 20px; }
+dialog label.campo { display: block; color: var(--fraco); font-size: 14px; margin: 12px 0 4px; }
+dialog input[type=date], dialog input[type=text] {
+  width: 100%;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  padding: 13px;
+}
+dialog input:focus { outline: 2px solid var(--bordo-claro); outline-offset: 1px; }
+.linha { display: flex; gap: 10px; margin-top: 16px; }
+.linha > * { flex: 1; }
+.botao {
+  display: block;
+  text-align: center;
+  border: 1px solid var(--borda);
+  background: var(--cartao-2);
+  border-radius: 14px;
+  padding: 13px;
+  font-weight: 600;
+}
+.linha .principal { margin: 0; }
+.excluir { color: #e08b7f; }
+dialog img { display: block; width: 100%; max-height: 52vh; object-fit: contain; border-radius: 16px; margin-top: 14px; background: #1a1011; }
+</style>
+</head>
+<body>
+
+<main id="telaTreino">
+  <section class="destaque">
+    <small id="treinoDia"></small>
+    <h1 id="treinoNome"></h1>
+    <p id="treinoSub"></p>
+  </section>
+  <div id="listaTreinos"></div>
+</main>
+
+<main id="telaDieta" hidden>
+  <section class="destaque">
+    <small>Meta do dia</small>
+    <h1>~1.800 kcal</h1>
+    <p>Contando as frutas · ~150 g de proteína</p>
+  </section>
+  <div id="listaDieta"></div>
+</main>
+
+<main id="telaEvolucao" hidden>
+  <section class="destaque">
+    <small>Evolução</small>
+    <h1 id="pesoAtual">—</h1>
+    <p id="pesoSub">Nenhum registro ainda</p>
+    <div class="resumo">
+      <div><span>Início</span><b id="pesoInicio">—</b></div>
+      <div><span>Diferença</span><b id="pesoDiff">—</b></div>
+      <div><span>Registros</span><b id="totalRegistros">0</b></div>
+    </div>
+  </section>
+  <button class="principal" id="novo">+ Novo registro</button>
+  <div class="card" id="grafico" hidden></div>
+  <div class="grade" id="historico"></div>
+</main>
+
+<nav>
+  <button data-tela="telaTreino" class="ativo">
+    <svg viewBox="0 0 24 24"><path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"/></svg>Treino
+  </button>
+  <button data-tela="telaDieta">
+    <svg viewBox="0 0 24 24"><path d="M7 3v8a2 2 0 0 0 2 2v8M5 3v5M9 3v5M17 3c-2 2-3 5-3 8h3v10"/></svg>Dieta
+  </button>
+  <button data-tela="telaEvolucao">
+    <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-9M15 6h6v6"/></svg>Evolução
+  </button>
+</nav>
+
+<dialog id="dlgNovo">
+  <form id="formNovo">
+    <h3>Novo registro</h3>
+    <label class="campo" for="nData">Data</label>
+    <input type="date" id="nData" required>
+    <label class="campo" for="nPeso">Peso (kg)</label>
+    <input type="text" id="nPeso" inputmode="decimal" placeholder="Ex.: 132,8" required>
+    <div class="linha">
+      <label class="botao">Câmera<input type="file" id="nCamera" accept="image/*" capture="environment" hidden></label>
+      <label class="botao">Galeria<input type="file" id="nGaleria" accept="image/*" hidden></label>
+    </div>
+    <img id="previa" alt="Prévia da foto" hidden>
+    <div class="linha">
+      <button type="button" class="botao" id="nCancelar">Cancelar</button>
+      <button class="principal">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgVer">
+  <h3 id="verPeso"></h3>
+  <span id="verData"></span>
+  <img id="verFoto" alt="Foto do registro">
+  <div class="linha">
+    <button type="button" class="botao excluir" id="verExcluir">Excluir</button>
+    <button type="button" class="botao" id="verFechar">Fechar</button>
+  </div>
+</dialog>
+
+<script>
+const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+
+const TREINOS = [
+  { nome: 'Superior + abdômen', abdomen: true, exercicios: [
+    ['Supino reto', '8–10'],
+    ['Puxada frente (pulley)', '10–12'],
+    ['Supino inclinado (máquina ou halter)', '10–12'],
+    ['Remada baixa', '10–12'],
+    ['Desenvolvimento na máquina', '10–12'],
+    ['Rosca martelo alternada', '10–12'],
+    ['Tríceps corda', '10–12']
+  ] },
+  { nome: 'Inferior', exercicios: [
+    ['Agachamento horizontal', '10–12'],
+    ['Leg 45', '10–12'],
+    ['Cadeira extensora', '12–15'],
+    ['Cadeira flexora', '10–12'],
+    ['Abdutora', '15'],
+    ['Panturrilha na máquina', '12–15', '4 séries']
+  ] },
+  { nome: 'Peito, ombro e tríceps + abdômen', abdomen: true, exercicios: [
+    ['Supino vertical sentado', '8–10'],
+    ['Crossover', '12–15'],
+    ['Peitoral na máquina', '12–15'],
+    ['Elevação lateral na máquina', '12–15'],
+    ['Tríceps unilateral no cross', '12'],
+    ['Tríceps na polia com barra reta', '10–12']
+  ] },
+  { nome: 'Costas e bíceps', exercicios: [
+    ['Remada articulada (row)', '10–12'],
+    ['Puxada com pegada fechada ou neutra', '10–12'],
+    ['Remada cavalinho com apoio no peito', '10–12', 'Se for a versão em pé e curvado, troque por remada unilateral na máquina'],
+    ['Crucifixo inverso na máquina', '12–15'],
+    ['Rosca scott', '10–12'],
+    ['Rosca direta no cabo', '12']
+  ] },
+  { nome: 'Pernas + abdômen', abdomen: true, exercicios: [
+    ['Leg 45', '10–12'],
+    ['Agachamento horizontal', '10–12'],
+    ['Cadeira flexora', '12–15'],
+    ['Cadeira extensora', '10–12'],
+    ['Abdutora', '15'],
+    ['Panturrilha sentado (ou na máquina)', '15', '4 séries']
+  ] },
+  { nome: 'Descanso' },
+  { nome: 'Descanso' }
+];
+
+const ABDOMEN = [
+  ['Elevação de joelhos na paralela', '3x 10–15', 'Se não aguentar, faça deitado no banco'],
+  ['Pallof press no cabo', '3x 10 de cada lado'],
+  ['Abdominal reto', '3x 15–20', 'Solte o ar enquanto sobe e não puxe o pescoço com as mãos. Se sentir pressão nos olhos, pare']
+];
+
+const CARDIO = [
+  'Bike, de preferência a horizontal (com encosto), por causa do pé',
+  'Duração: 20 min nas semanas 1 e 2, 25 min nas semanas 3 e 4, depois 30 min',
+  'Fique entre 115 e 135 bpm no relógio',
+  'Se o pé melhorar, pode alternar com o elíptico. Esteira só depois de me avisar'
+];
+
+const REGRAS_TREINO = [
+  '3 séries por exercício, com 60–90 s de descanso',
+  'Pare 2 repetições antes da falha',
+  'Solte o ar na hora da força e nunca prenda a respiração',
+  'Nada de cabeça abaixo do corpo nem de força olhando pro chão',
+  'Quando fizer o máximo da faixa de repetições nas 3 séries, aumente a carga'
+];
+
+const DIETA = [
+  { nome: 'Café da manhã', blocos: [
+    { itens: ['3 ovos inteiros', '1 fatia de pão de forma (integral ou tradicional)', '1 fatia média de queijo muçarela ou minas (20 g)', 'Café com adoçante'] },
+    { titulo: 'No lugar do pão, pode ser (escolha 1)', itens: ['2 torradas integrais (20 g)', 'Mandioca cozida: 75 g', 'Batata-doce cozida: 100 g', 'Goma de tapioca: 30 g (misturada no ovo)', 'Cuscuz de milho cozido com sal: 80 g', 'Banana-da-terra: 60 g'] }
+  ] },
+  { nome: 'Almoço', blocos: [
+    { titulo: 'Carboidrato (escolha 1)', itens: ['Arroz branco ou integral: 100 g', 'Macarrão tradicional ou integral cozido: 100 g', 'Mandioca cozida: 100 g', 'Batata-doce cozida: 120 g', 'Batata inglesa cozida: 250 g', 'Banana-da-terra ou prata: 110 g'] },
+    { titulo: 'Feijão', itens: ['80 g'] },
+    { titulo: 'Proteína (escolha 1)', itens: ['Frango sem pele: 150 g', 'Carne vermelha magra (patinho, alcatra, chã de dentro ou músculo): 115 g', 'Carne de porco magra: 130 g', 'Peixe sem pele (atum, salmão, tilápia ou pescada): 200 g', '2 ovos inteiros + 3 claras'] },
+    { titulo: 'Salada à vontade', itens: ['Alface, tomate, cenoura ralada. Pode ser crua, cozida ou refogada.'] }
+  ] },
+  { nome: 'Sobremesa', sub: 'Depois do almoço', blocos: [
+    { itens: ['1 colher de sopa de leite condensado (20 g) + morango ou uva à vontade'] }
+  ] },
+  { nome: 'Lanche da tarde', blocos: [
+    { itens: ['Café com adoçante', '2 ovos cozidos', '1 fruta da lista de frutas liberadas'] }
+  ] },
+  { nome: 'Jantar', sub: 'Escolha um dos três', blocos: [
+    { titulo: 'Prato de comida', itens: ['Proteína (escolha 1): frango sem pele 150 g, carne vermelha magra 115 g, porco magro 130 g, peixe sem pele 200 g ou 2 ovos inteiros + 3 claras', 'Legumes cozidos (batata, abóbora, cenoura): até 150 g', 'Salada crua à vontade: alface, tomate, cenoura ralada'] },
+    { titulo: 'Sanduíche', itens: ['Pão (escolha 1): 2 fatias de pão de forma integral (50 g), 1 Rap10 integral (40 g), goma de tapioca 40 g ou cuscuz de milho com sal 110 g', 'Recheio (escolha 1): frango desfiado ou atum sem óleo, 4 colheres de sopa cheias (80 g), ou 3 ovos inteiros', '1 colher de sopa rasa de requeijão light ou cream cheese light (15 g)'] },
+    { titulo: 'Ovos com frango', itens: ['3 ovos', 'Frango desfiado ou atum sem óleo: 3 colheres de sopa cheias (60 g)', '1 fatia média de queijo minas (30 g)'] }
+  ] },
+  { nome: 'Ceia', sub: 'O doce da noite', blocos: [
+    { itens: ['1 Danone ou 1 fruta da lista'] }
+  ] },
+  { nome: 'Frutas liberadas', blocos: [
+    { itens: ['Morango, pera, maçã, kiwi, uva, manga, melancia, melão, mamão, mexerica, laranja, abacaxi e ameixa.', 'Pode comer quando tiver fome, com moderação.', 'A banana não está nessa lista: ela entra só como troca do carboidrato.'] }
+  ] },
+  { nome: 'Regras', blocos: [
+    { itens: ['Use adoçante no lugar do açúcar, no café e no suco de caju', 'Beba no mínimo 3 L de água por dia', 'Refri zero pode, mas não no lugar da água', 'Não compre biscoito recheado, salgadinho nem sorvete de pote', 'Doce só na sobremesa do almoço e na ceia', 'Lanche pedido só 1 vez por semana, num dia que você escolhe', 'Se bater fome fora de hora, coma fruta da lista, ovo ou salada'] }
+  ] }
+];
+
+const $ = id => document.getElementById(id);
+let banco;
+let registros = [];
+let fotoNova = null;
+let aberto = null;
+let enderecos = [];
+
+function el(tag, props, ...filhos) {
+  const e = Object.assign(document.createElement(tag), props);
+  e.append(...filhos.filter(Boolean));
+  return e;
+}
+
+function lista(itens) {
+  return el('ul', {}, ...itens.map(i => el('li', {}, i)));
+}
+
+function exercicio([nome, reps, obs]) {
+  return el('div', { className: 'ex' }, el('div', {}, nome, obs && el('small', {}, obs)), el('span', { className: 'reps' }, reps));
+}
+
+function cartao(titulo, sub, corpo, hoje) {
+  return el('details', { className: 'card' + (hoje ? ' hoje' : ''), open: Boolean(hoje) },
+    el('summary', {}, el('span', { className: 'titulo' }, el('b', {}, titulo), sub && el('span', {}, sub)), hoje && el('span', { className: 'selo' }, 'Hoje')),
+    el('div', { className: 'corpo' }, ...corpo));
+}
+
+function corpoTreino(t) {
+  if (!t.exercicios) {
+    return [el('p', { className: 'vazio' }, 'Dia de descanso.')];
+  }
+  return [
+    ...t.exercicios.map(exercicio),
+    ...(t.abdomen ? [el('h4', {}, 'Abdômen'), ...ABDOMEN.map(exercicio)] : []),
+    el('h4', {}, 'Cardio (depois do treino)'),
+    lista(CARDIO)
+  ];
+}
+
+function renderTreino() {
+  const hoje = new Date().getDay();
+  $('treinoDia').textContent = 'Hoje · ' + DIAS[hoje];
+  $('treinoNome').textContent = TREINOS[hoje].nome;
+  $('treinoSub').textContent = TREINOS[hoje].exercicios ? TREINOS[hoje].exercicios.length + ' exercícios + cardio' : 'Sem treino hoje';
+  $('listaTreinos').replaceChildren(
+    ...TREINOS.map((t, i) => cartao(DIAS[i], t.nome, corpoTreino(t), i === hoje)),
+    cartao('Regras de todos os treinos', null, [lista(REGRAS_TREINO)]));
+}
+
+function renderDieta() {
+  $('listaDieta').replaceChildren(...DIETA.map(r =>
+    cartao(r.nome, r.sub, r.blocos.flatMap(b => [b.titulo && el('h4', {}, b.titulo), lista(b.itens)]))));
+}
+
+function abrirBanco() {
+  return new Promise((ok, erro) => {
+    const pedido = indexedDB.open('evolucao', 1);
+    pedido.onupgradeneeded = () => pedido.result.createObjectStore('registros', { keyPath: 'id' });
+    pedido.onsuccess = () => ok(pedido.result);
+    pedido.onerror = () => erro(pedido.error);
+  });
+}
+
+function operar(modo, acao) {
+  return new Promise((ok, erro) => {
+    const transacao = banco.transaction('registros', modo);
+    const pedido = acao(transacao.objectStore('registros'));
+    transacao.oncomplete = () => ok(pedido.result);
+    transacao.onerror = () => erro(transacao.error);
+  });
+}
+
+async function reduzir(arquivo) {
+  const imagem = await createImageBitmap(arquivo);
+  const escala = Math.min(1, 1280 / Math.max(imagem.width, imagem.height));
+  const tela = el('canvas', { width: Math.round(imagem.width * escala), height: Math.round(imagem.height * escala) });
+  tela.getContext('2d').drawImage(imagem, 0, 0, tela.width, tela.height);
+  return new Promise(ok => tela.toBlob(ok, 'image/jpeg', 0.8));
+}
+
+function kg(n) {
+  return n.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' kg';
+}
+
+function variacao(n) {
+  return (n > 0 ? '+' : '') + kg(n);
+}
+
+function br(data) {
+  return data.split('-').reverse().join('/');
+}
+
+function hojeIso() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function grafico() {
+  const pesos = registros.map(r => r.peso);
+  const min = Math.min(...pesos);
+  const faixa = Math.max(...pesos) - min || 1;
+  const pontos = pesos.map((p, i) => [12 + i * 296 / (pesos.length - 1), 14 + (1 - (p - min) / faixa) * 82]);
+  const ultimo = pontos[pontos.length - 1];
+  $('grafico').innerHTML = '<svg viewBox="0 0 320 110">'
+    + '<polyline points="' + pontos.map(p => p.join(',')).join(' ') + '" fill="none" stroke="#c9605a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'
+    + '<circle cx="' + ultimo[0] + '" cy="' + ultimo[1] + '" r="5" fill="#f4eae7"/></svg>';
+}
+
+async function renderEvolucao() {
+  registros = (await operar('readonly', s => s.getAll())).sort((a, b) => a.data.localeCompare(b.data) || a.id - b.id);
+  enderecos.forEach(u => URL.revokeObjectURL(u));
+  enderecos = [];
+  const ultimo = registros[registros.length - 1];
+  $('totalRegistros').textContent = registros.length;
+  $('pesoAtual').textContent = ultimo ? kg(ultimo.peso) : '—';
+  $('pesoSub').textContent = ultimo ? 'Último registro em ' + br(ultimo.data) : 'Nenhum registro ainda';
+  $('pesoInicio').textContent = ultimo ? kg(registros[0].peso) : '—';
+  $('pesoDiff').textContent = ultimo ? variacao(ultimo.peso - registros[0].peso) : '—';
+  $('grafico').hidden = registros.length < 2;
+  if (registros.length >= 2) {
+    grafico();
+  }
+  $('historico').replaceChildren(...registros.map((r, i) => {
+    const diff = i ? r.peso - registros[i - 1].peso : 0;
+    let foto = el('div', { className: 'foto' }, 'Sem foto');
+    if (r.foto) {
+      enderecos.push(URL.createObjectURL(r.foto));
+      foto = el('img', { className: 'foto', src: enderecos[enderecos.length - 1], alt: 'Foto de ' + br(r.data), loading: 'lazy' });
+    }
+    return el('button', { className: 'card registro', onclick: () => ver(r) }, foto,
+      el('div', { className: 'info' }, el('span', {}, br(r.data)), el('b', {}, kg(r.peso)),
+        diff && el('em', { className: diff < 0 ? 'desceu' : 'subiu' }, variacao(diff))));
+  }).reverse());
+}
+
+function ver(r) {
+  aberto = r;
+  $('verPeso').textContent = kg(r.peso);
+  $('verData').textContent = br(r.data);
+  $('verFoto').hidden = !r.foto;
+  if (r.foto) {
+    enderecos.push(URL.createObjectURL(r.foto));
+    $('verFoto').src = enderecos[enderecos.length - 1];
+  }
+  $('dlgVer').showModal();
+}
+
+async function escolherFoto(e) {
+  if (!e.target.files[0]) {
+    return;
+  }
+  fotoNova = await reduzir(e.target.files[0]);
+  e.target.value = '';
+  $('previa').src = URL.createObjectURL(fotoNova);
+  $('previa').hidden = false;
+}
+
+document.querySelectorAll('nav button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('nav button').forEach(x => x.classList.toggle('ativo', x === b));
+    document.querySelectorAll('main').forEach(m => { m.hidden = m.id !== b.dataset.tela; });
+    scrollTo(0, 0);
+  };
+});
+
+$('novo').onclick = () => {
+  fotoNova = null;
+  $('nData').value = hojeIso();
+  $('nPeso').value = '';
+  $('previa').hidden = true;
+  $('dlgNovo').showModal();
+};
+$('nCamera').onchange = escolherFoto;
+$('nGaleria').onchange = escolherFoto;
+$('nCancelar').onclick = () => $('dlgNovo').close();
+$('verFechar').onclick = () => $('dlgVer').close();
+
+$('formNovo').onsubmit = async e => {
+  e.preventDefault();
+  const peso = Number($('nPeso').value.replace(',', '.'));
+  if (!(peso > 0)) {
+    alert('Informe o peso em kg, por exemplo 132,8.');
+    return;
+  }
+  await operar('readwrite', s => s.put({ id: Date.now(), data: $('nData').value, peso, foto: fotoNova }));
+  $('dlgNovo').close();
+  renderEvolucao();
+};
+
+$('verExcluir').onclick = async () => {
+  if (!confirm('Excluir este registro?')) {
+    return;
+  }
+  await operar('readwrite', s => s.delete(aberto.id));
+  $('dlgVer').close();
+  renderEvolucao();
+};
+
+renderTreino();
+renderDieta();
+abrirBanco().then(b => {
+  banco = b;
+  renderEvolucao();
+});
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+if (navigator.storage && navigator.storage.persist) {
+  navigator.storage.persist();
+}
+</script>
+</body>
+</html>
